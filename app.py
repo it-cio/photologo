@@ -18,5 +18,7 @@ def insert_logo(input_photo_path, output_photo_path, logo_path, position):
 if __name__ == '__main__':
     for file in os.listdir():
         if file.lower().endswith('.jpg'):
-            insert_logo(file, f'logo/logo_{file}',
-                        'logo/logo.png', position=(0, 50))
+            if not os.path.isdir('modified'):
+                os.mkdir('modified')
+            insert_logo(file, f'modified/logo_{file}',
+                        'logo/logo.png', position=(70, 150))
