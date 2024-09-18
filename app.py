@@ -15,10 +15,9 @@ def insert_logo(input_photo_path, output_photo_path, logo_path):
     width_percent = fixed_width / logo.width * 100
     height_size = int(logo.height / 100 * width_percent)
     logo_resize = logo.resize((fixed_width, height_size))
-
     indent = int(base_image.height / 100 * 5)
-
-    position = (base_image.width-logo_resize.width-indent, base_image.height-logo_resize.height-indent)
+    position = (base_image.width - (logo_resize.width + indent),
+                base_image.height - (logo_resize.height + indent))
     transparent.paste(logo_resize, position, mask=logo_resize)
     # transparent.show()
     transparent.save(output_photo_path)
@@ -29,5 +28,4 @@ if __name__ == '__main__':
         if file.lower().endswith('.jpg'):
             if not os.path.isdir('modified'):
                 os.mkdir('modified')
-            insert_logo(file, f'modified/logo_{file}',
-                        'logo/logo.png')
+            insert_logo(file, f'modified/logo_{file}', 'logo/logo.png')
