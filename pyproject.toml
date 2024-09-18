@@ -6,7 +6,7 @@ authors = ["Divider <it-cio@mail.ru>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = ">=3.9"
 pillow = "^10.0.1"
 opencv-python = "^4.8.0.76"
 
