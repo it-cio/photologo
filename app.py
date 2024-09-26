@@ -3,7 +3,7 @@ import sys
 from PIL import Image
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPalette, QColor
+from PyQt5.QtGui import QPalette, QColor, QFont
 from PyQt5.QtWidgets import QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, \
     QFileDialog, QMessageBox, QMainWindow, QApplication
 
@@ -16,30 +16,39 @@ class LogoMixer(QWidget):
         self.logo_path = "logo/logo.png"
 
         self.input_frame = QLabel()
-        self.input_frame.setMinimumSize(600, 350)
-        h_box = QHBoxLayout()
-        h_box.addStretch()
-
-        self.input_photo_path = QPushButton("Выберите папку с фото")
-        self.input_photo_path.clicked.connect(self.get_photo_dir)
-        h_box.addWidget(self.input_photo_path)
-        h_box.addStretch()
-
-        self.input_start = QPushButton("Добавить логотип")
-        self.input_start.clicked.connect(self.add_photo_logo)
-        h_box.addWidget(self.input_start)
-        h_box.addStretch()
-
+        self.input_frame.setMinimumSize(300, 200)
         v_box = QVBoxLayout()
         v_box.addStretch()
-        v_box.addWidget(self.input_frame)
-        v_box.addStretch()
-        v_box.addLayout(h_box)
-        v_box.addStretch()
-        self.setLayout(v_box)
 
-    def get_photo_dir(self):
-        self.photo_path = QFileDialog.getExistingDirectory(self, "Выберите папку с исходниками", os.getenv("HOME"))
+        v_box.addWidget(QLabel("Выберите папку с исходниками"))
+        self.input_photo_path = QPushButton("Фото")
+        self.input_photo_path.setFixedSize(300, 100)
+        self.input_photo_path.setStyleSheet('QPushButton {background-color: darkblue}')
+        self.input_photo_path.setFont(QFont('Impact', 15))
+        self.input_photo_path.clicked.connect(self.get_photo_path)
+        v_box.addWidget(self.input_photo_path)
+        v_box.addStretch()
+
+        v_box.addWidget(QLabel("Добавьте логотип на фотографии"))
+        self.input_start = QPushButton("Старт")
+        self.input_start.setFixedSize(300, 100)
+        self.input_start.setStyleSheet('QPushButton {background-color: darkgreen}')
+        self.input_start.setFont(QFont('Impact', 15))
+        self.input_start.clicked.connect(self.add_photo_logo)
+        v_box.addWidget(self.input_start)
+        v_box.addStretch()
+
+        h_box = QHBoxLayout()
+        h_box.addStretch()
+        # h_box.addWidget(self.input_frame)
+        # h_box.addStretch()
+        h_box.addLayout(v_box)
+        h_box.addStretch()
+        self.setLayout(h_box)
+
+    def get_photo_path(self):
+        self.photo_path = QFileDialog.getExistingDirectory(self, "Выберите папку с исходниками",
+                                                           os.getenv("HOME"))  # 'C://'
         if self.photo_path != "":
             self.input_photo_path.setText(self.photo_path.split("/")[-1])
 
@@ -50,8 +59,8 @@ class LogoMixer(QWidget):
 
             for file in os.listdir(self.photo_path):
                 if file.lower().endswith('.jpg'):
-                    if not os.path.isdir(f'{self.photo_path}/modified'):
-                        os.mkdir(f'{self.photo_path}/modified')
+                    if not os.path.isdir(f'{self.photo_path}/mix'):
+                        os.mkdir(f'{self.photo_path}/mix')
                     base_image = Image.open(f'{self.photo_path}/{file}')
                     logo = Image.open(self.logo_path)
                     width, height = base_image.size
@@ -68,13 +77,13 @@ class LogoMixer(QWidget):
                                 base_image.height - (logo_resize.height + indent))
                     transparent.paste(logo_resize, position, mask=logo_resize)
                     # transparent.show()
-                    transparent.save(f'{self.photo_path}/modified/logo_{file}')
+                    transparent.save(f'{self.photo_path}/mix/SiriusAutodrom({file.split(".")[0]}).jpg')
             self.input_start.setEnabled(False)
 
         else:
             QMessageBox.about(self, "Info", "Не выбрана папка фото!")
 
-        os.startfile(f'{self.photo_path}/modified')
+        os.startfile(f'{self.photo_path}/mix')
         sys.exit(app.exec_())
 
 
@@ -94,7 +103,7 @@ app.setStyle("Fusion")
 def create_palette():
     palette = QPalette()
     palette.setColor(QPalette.Window, QColor(50, 50, 50))
-    palette.setColor(QPalette.WindowText, Qt.darkGray)
+    palette.setColor(QPalette.WindowText, Qt.gray)
     palette.setColor(QPalette.Base, QColor(30, 30, 30))
     palette.setColor(QPalette.AlternateBase, QColor(50, 50, 50))
     palette.setColor(QPalette.ToolTipBase, Qt.white)
